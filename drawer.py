@@ -9,7 +9,7 @@ class Drawer:
   torusInnerRadius = 0.5
   torusOuterRadius = 1
   shrinker = 1
-  def __init__(self, windoww = 500, windowh = 500):
+  def __init__(self, windoww = 500, windowh = 500):git a
     glutInit() # Инициализация GLUT для управления окном
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB) # Режимы отображения: два буфера, RGB для вывода цвета, 
     glutInitWindowSize(windoww, windowh)   # Установка высоты и ширины окна
