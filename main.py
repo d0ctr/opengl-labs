@@ -1,3 +1,4 @@
 from drawer import Drawer
 
-pr = Drawer()
+lab1 = Drawer()
+lab1()
