@@ -1,4 +1,4 @@
-from drawer import Drawer
+from lab1 import Lab1
+from lab2 import Lab2
 
-lab1 = Drawer()
-lab1()
+Lab2().__call__()

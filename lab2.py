@@ -1,14 +1,21 @@
+
 from OpenGL import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
+from PIL import Image
+import math
 
-class Drawer:
-  cubeSize = 10
-  sphereRadius = 3
-  torusInnerRadius = 0.5
-  torusOuterRadius = 1
-  shrinker = 1
+class Lab2:
+  rLight = 10
+  cubeSize = 5
+  sphereRadius = 6
+  torusInnerRadius = 1.5
+  torusOuterRadius = 4
+  moving_speed = 0.05
+  position = 0
+  img = []
+  texture = 0
 
   def __init__(self, windoww = 800, windowh = 800):
     glutInit() # Инициализация GLUT для управления окном
@@ -16,55 +23,142 @@ class Drawer:
     glutInitWindowSize(windoww, windowh)   # Установка высоты и ширины окна
     glutInitWindowPosition(0, 0)   # Положение окна на экране
     glutCreateWindow(b'Cube') # Название окна
-    # glClearColor(0.5, 0.5, 0.1, 0) # Задний фон 
 
-    # glEnable(GL_BLEND);
-    # glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+    glEnable(GL_TEXTURE_2D)
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL)
+    glEnable(GL_BLEND)
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
     glEnable(GL_DEPTH_TEST) # Включаем буфер глубины
     glEnable(GL_LIGHTING) # Включаем освещение, чтобы получаить разноцветные фигуры
     glEnable(GL_LIGHT0) # Включаем источник света
-    glLightfv(GL_LIGHT0, GL_POSITION, [10, 10, 10, 1]) # Помещаем источник света
+    glLightfv(GL_LIGHT0, GL_POSITION, [20, 20, 20, 1]) # Помещаем источник света
     glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, [0, 0, 0]) # Направляем источник света 
     glMaterialfv(GL_FRONT, GL_SPECULAR, [1, 1, 1, 1]) # Белый свет, отражаемый от поверхностей
-    glMaterialf(GL_FRONT, GL_SHININESS, 128) # Степень отрженности света 0-128
     glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE) # Двусторонняя модель света
 
-    glRotate(50, 1, 1, 1) # Повроачиваем все оси на 50 градус
-
+    glRotate(135, 0, 1, 0) # Повроачиваем все оси на 50 градусов
+    glRotate(30 , 1, 0, -1)
     glutReshapeFunc(self.resizeWindow) # Устанавливаем функцию, которая должна вызываться при изменении размеров окна
     glutDisplayFunc(self.showScreen) # Устанавливаем какая функция будет заниматься отрисовкой в окне
     glutIdleFunc(self.showScreen) # Устанавливаем какую функцию вызывать пока не будет какого-то вызова извне
     
     # glutMainLoop()  # Запускаем бесконечный цикл работы программы
+  
+
+  def mySolidCube(self):
+    glBegin(GL_QUADS)
+    # Front Face
+    glNormal3f(0, 0, 1)
+    glTexCoord2f(0, 0) 
+    glVertex3f(-1, -1, 1)
+    glTexCoord2f(1, 0) 
+    glVertex3f( 1, -1, 1)
+    glTexCoord2f(1, 1) 
+    glVertex3f( 1, 1, 1)
+    glTexCoord2f(0, 1) 
+    glVertex3f(-1, 1, 1)
+
+    # Back Face
+    glNormal3f(0, 0, -1)
+    glTexCoord2f(1, 0) 
+    glVertex3f(-1, -1, -1)
+    glTexCoord2f(1, 1) 
+    glVertex3f(-1, 1, -1)
+    glTexCoord2f(0, 1) 
+    glVertex3f( 1, 1, -1)
+    glTexCoord2f(0, 0) 
+    glVertex3f( 1, -1, -1)
+
+    # Top Face
+    glNormal3f(0, 1, 0)
+    glTexCoord2f(0, 1) 
+    glVertex3f(-1, 1, -1)
+    glTexCoord2f(0, 0) 
+    glVertex3f(-1, 1, 1)
+    glTexCoord2f(1, 0) 
+    glVertex3f( 1, 1, 1)
+    glTexCoord2f(1, 1) 
+    glVertex3f( 1, 1, -1)
+
+    # Bottom Face
+    glNormal3f(0, -1, 0)
+    glTexCoord2f(1, 1) 
+    glVertex3f(-1, -1, -1)
+    glTexCoord2f(0, 1) 
+    glVertex3f( 1, -1, -1)
+    glTexCoord2f(0, 0) 
+    glVertex3f( 1, -1, 1)
+    glTexCoord2f(1, 0) 
+    glVertex3f(-1, -1, 1)
+
+    # Right face
+    glNormal3f(1, 0, 0)
+    glTexCoord2f(1, 0) 
+    glVertex3f( 1, -1, -1)
+    glTexCoord2f(1, 1) 
+    glVertex3f( 1, 1, -1)
+    glTexCoord2f(0, 1) 
+    glVertex3f( 1, 1, 1)
+    glTexCoord2f(0, 0) 
+    glVertex3f( 1, -1, 1)
+
+    # Left Face
+    glNormal3f(-1, 0, 0)
+    glTexCoord2f(0, 0) 
+    glVertex3f(-1, -1, -1)
+    glTexCoord2f(1, 0) 
+    glVertex3f(-1, -1, 1)
+    glTexCoord2f(1, 1) 
+    glVertex3f(-1, 1, 1)
+    glTexCoord2f(0, 1) 
+    glVertex3f(-1, 1, -1)
+    glEnd()
+
+  def loadTexture(self):
+    self.img = Image.open('cobblestone1.png')	
+    width = self.img.width
+    height = self.img.height
+    self.texture = glGenTextures(1)
+    glBindTexture(GL_TEXTURE_2D, self.texture)
+    glPixelStorei(GL_UNPACK_ALIGNMENT,1)
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, self.img.tobytes())
+    glGenerateMipmap(GL_TEXTURE_2D)
+    # glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP)
+    # glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP)
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT)
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT)
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR)
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL)
+
 
   def drawCube(self):
-    # Следующий if-elif отвечает за постоянное изменение размеров куба
-    if self.cubeSize >= 10:
-      self.shrinker = 0.99
-    elif self.cubeSize < 1:
-      self.shrinker = 1.01
     glPushMatrix() # Запоминаем нынешнее положение оси координат
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, [1, 0, 0, 1]) # Устанавливаем цвет фигуры (RGB, 0-1) и принцип свечения (материал сам производит свет)
-    glScalef(self.shrinker, self.shrinker, self.shrinker) # Изменяем размер фигуры в указанное количество раз по осям x, y, z
-    # self.cubeSize *= self.shrinker # Изменяем ребро куба в указанное количество раз
-    glutWireCube(self.cubeSize) # Отрисовываем каркасный куб с установками
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, [1, 0, 0, 1]) # Устанавливаем цвет фигуры (RGB, 0-1) и принцип свечения
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, 5) 
+    glTranslatef(10, 7, 0)
+    glRotatef(10, 1, 1, 1)
+    glScalef(self.cubeSize / 2, self.cubeSize / 2, self.cubeSize / 2) # Изменяем размер фигуры в указанное количество раз по осям x, y, z
+    self.mySolidCube()
     glPopMatrix() # Восстанавливаем положение оси координат
 
   def drawSphere(self):
     glPushMatrix() # Запоминаем нынешнее положение оси координат
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, [0, 0, 1, 1]) # Устанавливаем цвет фигуры (RGB, 0-1) и принцип свечения (материал сам производит свет)
-    glutWireSphere(self.sphereRadius, 50, 50) # Отрисовываем каркасную сферу
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, [0, 0, 1, 0.5]) # Устанавливаем цвет фигуры (RGB, 0-1) и принцип свечения (материал сам производит свет)
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, 5)
+    glTranslatef(10, 7, 0)
+    glutSolidSphere(self.sphereRadius, 100, 100) # Отрисовываем каркасную сферу
     glPopMatrix() # Восстанавливаем положение оси координат
 
   def drawTorus(self):
     glPushMatrix() # Запоминаем нынешнее положение оси координат
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, [0, 1, 0, 0.7]) # Устанавливаем цвет фигуры (RGB, 0-1) и принцип свечения (материал сам производит свет)
-    glTranslatef(self.cubeSize / 2, self.cubeSize / 2, self.cubeSize / 2) # Перемещаем центр тора на вершину куба
-    glRotatef(90, 1, 0, 0) # Поворачиваем тор на 90 градусов по оси x 
-    # glScalef(self.shrinker, self.shrinker, self.shrinker)
-    # self.torusInnerRadius *= self.shrinker
-    # self.torusOuterRadius *= self.shrinker
-    glutSolidTorus(self.torusInnerRadius, self.torusOuterRadius, 50, 50) # Отрисовываем тор
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, [0, 1, 0, 1]) # Устанавливаем цвет фигуры (RGB, 0-1) и принцип свечения (материал сам производит свет)
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, 128) 
+    glTranslatef(0, 7, 10) 
+    glRotatef(90, 0, 1, 0) # Поворачиваем тор на 90 градусов по оси x
+    glutSolidTorus(self.torusInnerRadius, self.torusOuterRadius, 100, 100) # Отрисовываем тор
     glPopMatrix() # Восстанавливаем положение оси координат
 
   def drawAxis(self):
@@ -86,12 +180,16 @@ class Drawer:
   
   def showScreen(self):
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) # Удаляем все с экрана
-    
+    self.position += self.moving_speed
+    glLightfv(GL_LIGHT0, GL_POSITION, [self.rLight * math.cos(self.position), self.rLight * math.sin(self.position), 10, 1])
+    self.loadTexture()
+    glBindTexture(GL_TEXTURE_2D, self.texture)
     self.drawCube() # Рисуем куб
-    self.drawSphere() # Рисуем сферу
+    glBindTexture(GL_TEXTURE_2D, 0)
     self.drawTorus() # Рисуем тор
-    self.drawAxis() # Рисуем оси
-
+    self.drawSphere() # Рисуем сферу
+    # self.drawAxis() # Рисуем оси
+    
     glutSwapBuffers() # Подменяем изображение на экране с новыми настройками
 
 
@@ -102,7 +200,7 @@ class Drawer:
     glViewport(0, 0, size, size) # Устанавливаем окно, на которое проецируется изображение
     glMatrixMode(GL_PROJECTION) # Далее настриваем отображение
     glLoadIdentity() # Возвращаем марицу в состояние по-умолчанию
-    glOrtho(-10, 10, -10, 10, 0, 100)  # Устанавливаем параметры для ортографической проекции
+    glOrtho(-20, 20, -20, 20, 0, 100)  # Устанавливаем параметры для ортографической проекции
     # glFrustum(-1, 1, -1, 1, 1, 100)
     gluLookAt(0, 0, 10, # Устанавливаем положение камеры x, y, z
               0, 0, 0, # Устанавливаем смещение направления камеры
