@@ -7,7 +7,7 @@ from PIL import Image
 import math
 
 class Lab2:
-  rLight = 20
+  rLight = 30
   cubeSize = 5
   sphereRadius = 6
   torusInnerRadius = 1.5
@@ -48,7 +48,7 @@ class Lab2:
     glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE) # Двусторонняя модель света
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, [0.2, 0.2, 0.2, 1])
 
-    glRotate(45, 0, -1, 0) # Повроачиваем все оси на 50 градусов
+    glRotate(45, 0, -1, 0)
     glRotate(30 , 1, 0, -1)
     glutReshapeFunc(self.resizeWindow) # Устанавливаем функцию, которая должна вызываться при изменении размеров окна
     glutDisplayFunc(self.showScreen) # Устанавливаем какая функция будет заниматься отрисовкой в окне
@@ -139,8 +139,20 @@ class Lab2:
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR)
+    glBindTexture(GL_TEXTURE_2D, 0)
     
-
+  def drawTetrahedron(self):
+    glPushMatrix() # Запоминаем нынешнее положение оси координат
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, [0.2, 0.2, 0.2, 1])
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, [0.8, 0.8, 0.8, 1]) # Устанавливаем цвет фигуры (RGB, 0-1) и принцип свечения (материал сам производит свет)
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, [1, 1, 1, 1])
+    glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, [0, 0, 0, 1]) 
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, 5)
+    glTranslatef(0, 0, -15)
+    glScale(6, 6, 6)
+    glRotate(-80, 1, 1, 0)
+    glutSolidTetrahedron() # Отрисовываем каркасную сферу
+    glPopMatrix() # Восстанавливаем положение оси координат
 
   def drawCube(self):
     glPushMatrix() # Запоминаем нынешнее положение оси координат
@@ -149,7 +161,7 @@ class Lab2:
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, [1, 1, 1, 1]) 
     glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, [0, 0, 0, 1]) 
     glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, 50) 
-    glTranslatef(-10, 0, -10)
+    glTranslatef(-15, 0, 0)
     glRotatef(45, 1, 1, 1)
     glScalef(self.cubeSize / 2, self.cubeSize / 2, self.cubeSize / 2) # Изменяем размер фигуры в указанное количество раз по осям x, y, z
     self.mySolidCube()
@@ -157,19 +169,23 @@ class Lab2:
 
   def drawSphere(self):
     glPushMatrix() # Запоминаем нынешнее положение оси координат
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, [0, 0, 1, 0.5]) # Устанавливаем цвет фигуры (RGB, 0-1) и принцип свечения (материал сам производит свет)
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, [0.2, 0.2, 0.2, 0.5])
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, [0, 0, 1, 0.5]) # Устанавливаем цвет фигуры (RGB, 0-1) и принцип свечения (материал сам производит свет)
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, [1, 1, 1, 1])
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, 5)
-    glTranslatef(10, 0, 0)
+    glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, [0, 0, 0, 1])
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, 50)
+    glTranslatef(15, 0, 0)
     glutSolidSphere(self.sphereRadius, 100, 100) # Отрисовываем каркасную сферу
     glPopMatrix() # Восстанавливаем положение оси координат
 
   def drawTorus(self):
     glPushMatrix() # Запоминаем нынешнее положение оси координат
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, [0, 1, 0, 1]) # Устанавливаем цвет фигуры (RGB, 0-1) и принцип свечения (материал сам производит свет)
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, [0.2, 0.2, 0.2, 1])
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, [0, 1, 0, 1]) # Устанавливаем цвет фигуры (RGB, 0-1) и принцип свечения (материал сам производит свет)
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, [1, 1, 1, 1])
+    glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, [0, 0, 0, 1])
     glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, 128) 
-    glTranslatef(0, 0, 10) 
+    glTranslatef(0, 0, 15) 
     glRotatef(90, 1, 0, 0) # Поворачиваем тор на 90 градусов по оси x
     glutSolidTorus(self.torusInnerRadius, self.torusOuterRadius, 100, 100) # Отрисовываем тор
     glPopMatrix() # Восстанавливаем положение оси координат
@@ -178,15 +194,15 @@ class Lab2:
     glPushMatrix() # Запоминаем нынешнее положение оси координат
     glBegin(GL_LINES) # Настраиваем линии для отрисовки 
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, [1, 0, 0, 1]) # Устанавливаем цвет фигуры (RGB, 0-1) и принцип свечения (материал сам производит свет)
-    glVertex3f(0, 0, 0) # От центра
+    glVertex3f(-999, 0, 0) # От центра
     glVertex3f(999, 0, 0) # до 20 по оси x
 
     glMaterialfv(GL_FRONT_AND_BACK,  GL_AMBIENT_AND_DIFFUSE, [0, 1, 0, 1]) # Устанавливаем цвет фигуры (RGB, 0-1) и принцип свечения (материал сам производит свет)
-    glVertex3f(0, 0, 0) # От центра
+    glVertex3f(0, -999, 0) # От центра
     glVertex3f(0, 999, 0) # до 20 по оси y
 
     glMaterialfv(GL_FRONT_AND_BACK,  GL_AMBIENT_AND_DIFFUSE, [0, 0, 1, 1]) # Устанавливаем цвет фигуры (RGB, 0-1) и принцип свечения (материал сам производит свет)
-    glVertex3f(0, 0, 0) # От центра
+    glVertex3f(0, 0, -999) # От центра
     glVertex3f(0, 0, 999) # до 20 по оси z
     glEnd() # Останавливаем настройку и отрисовываем
     glPopMatrix() # Восстанавливаем положение оси координат
@@ -201,6 +217,7 @@ class Lab2:
     self.drawCube() # Рисуем куб
     glBindTexture(GL_TEXTURE_2D, 0)
     self.drawTorus() # Рисуем тор
+    self.drawTetrahedron()
     self.drawSphere() # Рисуем сферу
     # self.drawAxis() # Рисуем оси
     # glRotate(1, 0, 1, 0)
