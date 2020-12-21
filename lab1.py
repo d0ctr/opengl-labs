@@ -46,19 +46,27 @@ class Lab1:
     glPushMatrix() # Запоминаем нынешнее положение оси координат
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, [1, 0, 0, 1]) # Устанавливаем цвет фигуры (RGB, 0-1) и принцип свечения (материал сам производит свет)
     glScalef(self.shrinker, self.shrinker, self.shrinker) # Изменяем размер фигуры в указанное количество раз по осям x, y, z
-    # self.cubeSize *= self.shrinker # Изменяем ребро куба в указанное количество раз
+    self.cubeSize *= self.shrinker # Изменяем ребро куба в указанное количество раз
     glutWireCube(self.cubeSize) # Отрисовываем каркасный куб с установками
     glPopMatrix() # Восстанавливаем положение оси координат
 
   def drawSphere(self):
     glPushMatrix() # Запоминаем нынешнее положение оси координат
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, [0, 0, 1, 1]) # Устанавливаем цвет фигуры (RGB, 0-1) и принцип свечения (материал сам производит свет)
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, [0, 1, 0, 1]) # Устанавливаем цвет фигуры (RGB, 0-1) и принцип свечения (материал сам производит свет)
     glutWireSphere(self.sphereRadius, 50, 50) # Отрисовываем каркасную сферу
     glPopMatrix() # Восстанавливаем положение оси координат
 
+  def drawTetrahedron(self):
+    glPushMatrix()
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, [0, 0, 1, 1])
+    glTranslatef(self.cubeSize / 2, -self.cubeSize / 2, self.cubeSize / 2)
+    glRotate(20, 0, 1, 0)
+    glutSolidTetrahedron()
+    glPopMatrix()
+
   def drawTorus(self):
     glPushMatrix() # Запоминаем нынешнее положение оси координат
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, [0, 1, 0, 0.7]) # Устанавливаем цвет фигуры (RGB, 0-1) и принцип свечения (материал сам производит свет)
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, [1, 0, 1, 0.7]) # Устанавливаем цвет фигуры (RGB, 0-1) и принцип свечения (материал сам производит свет)
     glTranslatef(self.cubeSize / 2, self.cubeSize / 2, self.cubeSize / 2) # Перемещаем центр тора на вершину куба
     glRotatef(90, 1, 0, 0) # Поворачиваем тор на 90 градусов по оси x 
     # glScalef(self.shrinker, self.shrinker, self.shrinker)
@@ -90,6 +98,7 @@ class Lab1:
     self.drawCube() # Рисуем куб
     self.drawSphere() # Рисуем сферу
     self.drawTorus() # Рисуем тор
+    self.drawTetrahedron() # Рисуем тетраедер
     self.drawAxis() # Рисуем оси
 
     glutSwapBuffers() # Подменяем изображение на экране с новыми настройками
@@ -111,3 +120,6 @@ class Lab1:
 
   def __call__(self):
     glutMainLoop()
+
+if __name__ == "__main__":
+  Lab1().__call__()

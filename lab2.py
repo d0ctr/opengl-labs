@@ -127,7 +127,7 @@ class Lab2:
     glEnd()
 
   def loadTexture(self):
-    self.img = Image.open('cobblestone1.png')	
+    self.img = Image.open('cube.png')	
     width = self.img.width
     height = self.img.height
     self.texture = glGenTextures(1)
@@ -241,3 +241,6 @@ class Lab2:
 
   def __call__(self):
     glutMainLoop()
+
+if __name__ == '__main__':
+  Lab2().__call__()
